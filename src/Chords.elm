@@ -1,14 +1,11 @@
 module Chords exposing (parseSheet)
 
-
-type Chord
-    = Chord String
-
-
-type alias PositionedChord =
-    ( Chord, Int )
+import Chords.LineParser as LineParser
+import Chords.Types exposing (Token)
 
 
-parseSheet : String -> List ( String, List PositionedChord )
+parseSheet : String -> List (List Token)
 parseSheet sheet =
-    []
+    sheet
+        |> String.split "\n"
+        |> List.map LineParser.parseLine
