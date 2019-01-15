@@ -8,10 +8,27 @@ parseLine : String -> List Token
 parseLine line =
     case run lineParser line of
         Ok tokens ->
-            tokens
+            canonicalize tokens
 
         Err err ->
             [ Text line ]
+
+
+canonicalize : List Token -> List Token
+canonicalize tokens =
+    let
+        doIt list acc =
+            case list of
+                (Text a) :: (Text b) :: rest ->
+                    doIt rest (Text (a ++ b) :: acc)
+
+                a :: rest ->
+                    doIt rest (a :: acc)
+
+                [] ->
+                    List.reverse acc
+    in
+    doIt tokens []
 
 
 lineParser : Parser (List Token)
@@ -25,8 +42,15 @@ lineParserHelp :
     -> Parser (Step (List Token) (List Token))
 lineParserHelp revTokens =
     oneOf
-        [ succeed (\c -> Loop (Parsed c :: revTokens))
-            |= chordParser
+        [ succeed identity
+            |. symbol "["
+            |= oneOf
+                [ succeed (\c -> Loop (Parsed c :: revTokens))
+                    |= chordParser
+                    |. symbol "]"
+                , succeed (Loop revTokens)
+                    |. symbol "]"
+                ]
         , succeed (\t -> Loop (Text t :: revTokens))
             |= textParser
         , succeed ()
@@ -37,9 +61,11 @@ lineParserHelp revTokens =
 chordParser : Parser Chord
 chordParser =
     succeed Chord
-        |. symbol "["
-        |= getChompedString (chompWhile (not << isClosing))
-        |. symbol "]"
+        |= getChompedString
+            (succeed ()
+                |. chompIf (not << isClosing)
+                |. chompWhile (not << isClosing)
+            )
 
 
 textParser : Parser String
