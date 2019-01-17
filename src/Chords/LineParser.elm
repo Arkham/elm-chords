@@ -1,11 +1,12 @@
-module Chords.LineParser exposing (parseLine)
+module Chords.LineParser exposing (parse)
 
+import Chords.ChordParser as ChordParser
 import Chords.Types exposing (Chord(..), Token(..))
 import Parser exposing (..)
 
 
-parseLine : String -> List Token
-parseLine line =
+parse : String -> List Token
+parse line =
     case run lineParser line of
         Ok tokens ->
             canonicalize tokens
@@ -46,7 +47,7 @@ lineParserHelp revTokens =
             |. symbol "["
             |= oneOf
                 [ succeed (\c -> Loop (Parsed c :: revTokens))
-                    |= chordParser
+                    |= ChordParser.parser
                     |. symbol "]"
                 , succeed (Loop revTokens)
                     |. symbol "]"
@@ -56,16 +57,6 @@ lineParserHelp revTokens =
         , succeed ()
             |> map (\_ -> Done (List.reverse revTokens))
         ]
-
-
-chordParser : Parser Chord
-chordParser =
-    succeed Chord
-        |= getChompedString
-            (succeed ()
-                |. chompIf (not << isClosing)
-                |. chompWhile (not << isClosing)
-            )
 
 
 textParser : Parser String

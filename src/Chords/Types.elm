@@ -1,11 +1,21 @@
 module Chords.Types exposing
     ( Chord(..)
+    , Quality(..)
     , Token(..)
     )
 
+import Chords.Note exposing (Note)
+
+
+type Quality
+    = Major
+    | Minor
+    | Augmented
+    | Diminished
+
 
 type Chord
-    = Chord String
+    = Chord Note Quality
 
 
 type Token

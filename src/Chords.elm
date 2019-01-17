@@ -8,4 +8,4 @@ parseTab : String -> List (List Token)
 parseTab sheet =
     sheet
         |> String.split "\n"
-        |> List.map LineParser.parseLine
+        |> List.map LineParser.parse

@@ -1,6 +1,7 @@
 module Chords.IntegrationSpec exposing (spec)
 
 import Chords
+import Chords.Note exposing (..)
 import Chords.Types exposing (..)
 import Expect
 import Test exposing (..)
@@ -15,7 +16,7 @@ spec =
                     "[Am]"
                         |> Chords.parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord "Am") ] ]
+                            [ [ Parsed (Chord A Minor) ] ]
             , test "parses a simple text" <|
                 \_ ->
                     "Hello"
@@ -27,7 +28,7 @@ spec =
                     "[Am]Hello"
                         |> Chords.parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord "Am")
+                            [ [ Parsed (Chord A Minor)
                               , Text "Hello"
                               ]
                             ]
@@ -36,8 +37,8 @@ spec =
                     "[Am][E]"
                         |> Chords.parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord "Am")
-                              , Parsed (Chord "E")
+                            [ [ Parsed (Chord A Minor)
+                              , Parsed (Chord E Major)
                               ]
                             ]
             , test "parses a more complicated line" <|
@@ -45,11 +46,11 @@ spec =
                     "[Am]Hello darkness [C]my old friend[E]"
                         |> Chords.parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord "Am")
+                            [ [ Parsed (Chord A Minor)
                               , Text "Hello darkness "
-                              , Parsed (Chord "C")
+                              , Parsed (Chord C Major)
                               , Text "my old friend"
-                              , Parsed (Chord "E")
+                              , Parsed (Chord E Major)
                               ]
                             ]
             , test "parses multiple lines" <|
@@ -57,12 +58,12 @@ spec =
                     "[Am]Hello darkness\n[C]my old friend[E]"
                         |> Chords.parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord "Am")
+                            [ [ Parsed (Chord A Minor)
                               , Text "Hello darkness"
                               ]
-                            , [ Parsed (Chord "C")
+                            , [ Parsed (Chord C Major)
                               , Text "my old friend"
-                              , Parsed (Chord "E")
+                              , Parsed (Chord E Major)
                               ]
                             ]
             , test "skips empty close brackets" <|
@@ -70,7 +71,7 @@ spec =
                     "[Am]Hello[] darkness[]"
                         |> Chords.parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord "Am")
+                            [ [ Parsed (Chord A Minor)
                               , Text "Hello darkness"
                               ]
                             ]
