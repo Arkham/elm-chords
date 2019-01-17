@@ -12,6 +12,14 @@ type Quality
     | Minor
     | Augmented
     | Diminished
+    | Dominant7
+    | Major7
+    | Minor7
+    | Augmented7
+    | Diminished7
+    | Fifth
+    | Major6
+    | Minor6
 
 
 type Chord

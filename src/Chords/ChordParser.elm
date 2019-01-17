@@ -10,10 +10,47 @@ parser =
     succeed Chord
         |= noteParser
         |= oneOf
-            [ succeed Minor
+            [ succeed identity
+                |. symbol "a"
+                |. symbol "u"
+                |. symbol "g"
+                |= oneOf
+                    [ succeed Augmented7
+                        |. symbol "7"
+                    , succeed Augmented
+                    ]
+            , succeed identity
+                |. symbol "d"
+                |. symbol "i"
                 |. symbol "m"
-            , succeed Minor
-                |. symbol "-"
+                |= oneOf
+                    [ succeed Diminished7
+                        |. symbol "7"
+                    , succeed Diminished
+                    ]
+            , succeed Major7
+                |. keyword "maj7"
+            , succeed Dominant7
+                |. symbol "7"
+            , succeed Major6
+                |. symbol "6"
+            , succeed Fifth
+                |. symbol "5"
+            , succeed
+                identity
+                |. oneOf
+                    [ succeed ()
+                        |. symbol "m"
+                    , succeed ()
+                        |. symbol "-"
+                    ]
+                |= oneOf
+                    [ succeed Minor7
+                        |. symbol "7"
+                    , succeed Minor6
+                        |. symbol "6"
+                    , succeed Minor
+                    ]
             , succeed Major
             ]
 
@@ -24,49 +61,35 @@ noteParser =
         |= oneOf
             [ succeed identity
                 |. symbol "A"
-                |= oneOf
-                    [ sharpParser Bb
-                    , flatParser Ab
-                    , succeed A
-                    ]
+                |= trio ( Ab, A, Bb )
             , succeed identity
                 |. symbol "B"
-                |= oneOf
-                    [ flatParser Bb
-                    , succeed B
-                    ]
+                |= trio ( Bb, B, C )
             , succeed identity
                 |. symbol "C"
-                |= oneOf
-                    [ sharpParser Db
-                    , succeed C
-                    ]
+                |= trio ( B, C, Db )
             , succeed identity
                 |. symbol "D"
-                |= oneOf
-                    [ sharpParser Eb
-                    , flatParser Db
-                    , succeed D
-                    ]
+                |= trio ( Db, D, Eb )
             , succeed identity
                 |. symbol "E"
-                |= oneOf
-                    [ flatParser Eb
-                    , succeed E
-                    ]
+                |= trio ( Eb, E, F )
             , succeed identity
                 |. symbol "F"
-                |= oneOf
-                    [ sharpParser Gb
-                    , succeed F
-                    ]
+                |= trio ( E, F, Gb )
             , succeed identity
                 |. symbol "G"
-                |= oneOf
-                    [ sharpParser Ab
-                    , flatParser Gb
-                    , succeed G
-                    ]
+                |= trio ( Gb, G, Ab )
+            ]
+
+
+trio : ( Note, Note, Note ) -> Parser Note
+trio ( before, current, after ) =
+    succeed identity
+        |= oneOf
+            [ flatParser before
+            , sharpParser after
+            , succeed current
             ]
 
 

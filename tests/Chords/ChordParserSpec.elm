@@ -27,16 +27,16 @@ spec =
                     "Bb"
                         |> run
                         |> Expect.equal (Ok (Chord Bb Major))
-            , test "does not parse an impossible sharp" <|
+            , test "parses a sharp chord equivalent" <|
                 \_ ->
                     "E#"
                         |> run
-                        |> Expect.err
-            , test "does not parse an impossible flat" <|
+                        |> Expect.equal (Ok (Chord F Major))
+            , test "parses a flat chord equivalent" <|
                 \_ ->
                     "Fb"
                         |> run
-                        |> Expect.err
+                        |> Expect.equal (Ok (Chord E Major))
             , test "parses a minor chord" <|
                 \_ ->
                     "Am"
@@ -47,6 +47,56 @@ spec =
                     "A-"
                         |> run
                         |> Expect.equal (Ok (Chord A Minor))
+            , test "parses an augmented chord" <|
+                \_ ->
+                    "Aaug"
+                        |> run
+                        |> Expect.equal (Ok (Chord A Augmented))
+            , test "parses a diminished chord" <|
+                \_ ->
+                    "Adim"
+                        |> run
+                        |> Expect.equal (Ok (Chord A Diminished))
+            , test "parses a dominant seventh" <|
+                \_ ->
+                    "A7"
+                        |> run
+                        |> Expect.equal (Ok (Chord A Dominant7))
+            , test "parses a major seventh" <|
+                \_ ->
+                    "Amaj7"
+                        |> run
+                        |> Expect.equal (Ok (Chord A Major7))
+            , test "parses a minor seventh" <|
+                \_ ->
+                    "Am7"
+                        |> run
+                        |> Expect.equal (Ok (Chord A Minor7))
+            , test "parses an augmented seventh" <|
+                \_ ->
+                    "Aaug7"
+                        |> run
+                        |> Expect.equal (Ok (Chord A Augmented7))
+            , test "parses a diminished seventh" <|
+                \_ ->
+                    "Adim7"
+                        |> run
+                        |> Expect.equal (Ok (Chord A Diminished7))
+            , test "parses a power chord" <|
+                \_ ->
+                    "A5"
+                        |> run
+                        |> Expect.equal (Ok (Chord A Fifth))
+            , test "parses a major sixth" <|
+                \_ ->
+                    "D6"
+                        |> run
+                        |> Expect.equal (Ok (Chord D Major6))
+            , test "parses a minor sixth" <|
+                \_ ->
+                    "Dm6"
+                        |> run
+                        |> Expect.equal (Ok (Chord D Minor6))
             ]
         ]
 
