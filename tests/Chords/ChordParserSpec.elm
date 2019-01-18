@@ -126,6 +126,11 @@ spec =
                     "Dsus2"
                         |> parse
                         |> Expect.equal (Ok "Dsus2")
+            , test "parses a seventh chord with suspended second" <|
+                \_ ->
+                    "D7sus2"
+                        |> parse
+                        |> Expect.equal (Ok "D7sus2")
             , test "parses a suspended fourth" <|
                 \_ ->
                     "Dsus4"
