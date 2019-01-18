@@ -38,9 +38,16 @@ parser =
                         |. symbol "7"
                     , succeed Diminished
                     ]
-            , succeed Major7
+            , succeed identity
                 |. backtrackable maj
-                |. symbol "7"
+                |= oneOf
+                    [ succeed Major9
+                        |. symbol "9"
+                    , succeed Major7
+                        |. symbol "7"
+                    ]
+            , succeed Dominant9
+                |. symbol "9"
             , succeed Dominant7
                 |. symbol "7"
             , succeed Major6
@@ -53,7 +60,9 @@ parser =
                         |. symbol "-"
                     ]
                 |= oneOf
-                    [ succeed Minor7
+                    [ succeed Minor9
+                        |. symbol "9"
+                    , succeed Minor7
                         |. symbol "7"
                     , succeed Minor6
                         |. symbol "6"

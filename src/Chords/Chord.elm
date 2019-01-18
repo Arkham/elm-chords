@@ -9,18 +9,21 @@ import Chords.Note as Note exposing (Note)
 
 
 type TertianQuality
-    = Major
-    | Minor
-    | Augmented
-    | Diminished
-    | Dominant7
-    | Major7
-    | Minor7
-    | AugmentedDominant7
-    | AugmentedMajor7
-    | Diminished7
-    | Major6
-    | Minor6
+    = Major -- Root, Major Third, Perfect Fifth
+    | Minor -- Root, Minor Third, Perfect Fifth
+    | Augmented -- Root, Major Third, Augmented Fifth
+    | Diminished -- Root, Minor Third, Diminished Fifth
+    | Dominant7 -- Root, Major Third, Perfect Fifth, Minor Seventh
+    | Major7 -- Root, Major Third, Perfect Fifth, Major Seventh
+    | Minor7 -- Root, Minor Third, Perfect Fifth, Major Seventh
+    | AugmentedDominant7 -- Root, Major Third, Augmented Fifth, Minor Seventh
+    | AugmentedMajor7 -- Root, Major Third, Augmented Fifth, Major Seventh
+    | Diminished7 -- Root, Minor Third, Diminished Fifth, Diminished Seventh
+    | Major6 -- Root, Major Third, Diminished Fifth, Major Sixth
+    | Minor6 -- Root, Minor Third, Diminished Fifth, Major Sixth
+    | Dominant9 -- Root, Major Third, Perfect Fifth, Minor Seventh, Major Ninth
+    | Major9 -- Root, Major Third, Perfect Fifth, Major Seventh, Major Ninth
+    | Minor9 -- Root, Minor Third, Perfect Fifth, Minor Seventh, Major Ninth
 
 
 type Quality
@@ -112,3 +115,12 @@ tertianToString tertian =
 
         Minor6 ->
             "m6"
+
+        Dominant9 ->
+            "9"
+
+        Major9 ->
+            "maj9"
+
+        Minor9 ->
+            "m9"

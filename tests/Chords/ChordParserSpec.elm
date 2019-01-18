@@ -106,6 +106,21 @@ spec =
                     "Dm6"
                         |> parse
                         |> Expect.equal (Ok "Dm6")
+            , test "parses a dominant ninth" <|
+                \_ ->
+                    "D9"
+                        |> parse
+                        |> Expect.equal (Ok "D9")
+            , test "parses a major ninth" <|
+                \_ ->
+                    "Dmaj9"
+                        |> parse
+                        |> Expect.equal (Ok "Dmaj9")
+            , test "parses a minor ninth" <|
+                \_ ->
+                    "Dm9"
+                        |> parse
+                        |> Expect.equal (Ok "Dm9")
             , test "parses a suspended second" <|
                 \_ ->
                     "Dsus2"
