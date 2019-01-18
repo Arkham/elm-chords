@@ -30,7 +30,7 @@ type Quality
     | Sus4 TertianQuality
     | Add9 TertianQuality
     | Add11 TertianQuality
-    | OverridingRoot Note TertianQuality
+    | NewRoot Note TertianQuality
 
 
 type Chord
@@ -67,7 +67,7 @@ toString (Chord root quality) =
                 ++ tertianToString tertian
                 ++ "add11"
 
-        OverridingRoot newRoot tertian ->
+        NewRoot newRoot tertian ->
             Note.toString root
                 ++ tertianToString tertian
                 ++ "/"

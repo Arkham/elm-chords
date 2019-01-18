@@ -20,7 +20,7 @@ parser =
         |= noteParser
         |= oneOf
             [ succeed identity
-                |. aug
+                |. backtrackable aug
                 |= oneOf
                     [ succeed AugmentedDominant7
                         |. symbol "7"
@@ -64,6 +64,30 @@ parser =
         |= oneOf
             [ succeed (\_ -> Fifth)
                 |. symbol "5"
+            , succeed identity
+                |. symbol "s"
+                |. symbol "u"
+                |. symbol "s"
+                |= oneOf
+                    [ succeed Sus2
+                        |. symbol "2"
+                    , succeed Sus4
+                        |. symbol "4"
+                    ]
+            , succeed identity
+                |. symbol "a"
+                |. symbol "d"
+                |. symbol "d"
+                |= oneOf
+                    [ succeed Add9
+                        |. symbol "9"
+                    , succeed Add11
+                        |. symbol "1"
+                        |. symbol "1"
+                    ]
+            , succeed NewRoot
+                |. symbol "/"
+                |= noteParser
             , succeed Tertian
             ]
 

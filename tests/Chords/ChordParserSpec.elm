@@ -106,6 +106,31 @@ spec =
                     "Dm6"
                         |> parse
                         |> Expect.equal (Ok "Dm6")
+            , test "parses a suspended second" <|
+                \_ ->
+                    "Dsus2"
+                        |> parse
+                        |> Expect.equal (Ok "Dsus2")
+            , test "parses a suspended fourth" <|
+                \_ ->
+                    "Dsus4"
+                        |> parse
+                        |> Expect.equal (Ok "Dsus4")
+            , test "parses an added ninth" <|
+                \_ ->
+                    "Dadd9"
+                        |> parse
+                        |> Expect.equal (Ok "Dadd9")
+            , test "parses an added eleventh" <|
+                \_ ->
+                    "Dadd11"
+                        |> parse
+                        |> Expect.equal (Ok "Dadd11")
+            , test "parses a chord with overridden root" <|
+                \_ ->
+                    "C7/F"
+                        |> parse
+                        |> Expect.equal (Ok "C7/F")
             ]
         ]
 
