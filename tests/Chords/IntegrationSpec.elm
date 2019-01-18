@@ -1,10 +1,17 @@
 module Chords.IntegrationSpec exposing (spec)
 
 import Chords
-import Chords.Note exposing (..)
-import Chords.Types exposing (..)
+import Chords.Chord as Chord
+import Chords.LineParser as LP
 import Expect
 import Test exposing (..)
+
+
+{-| This type makes assertions easier
+-}
+type Token
+    = Text String
+    | Chord String
 
 
 spec : Test
@@ -14,66 +21,82 @@ spec =
             [ test "parses a simple chord" <|
                 \_ ->
                     "[Am]"
-                        |> Chords.parseTab
+                        |> parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord A Minor) ] ]
+                            [ [ Chord "Am" ] ]
             , test "parses a simple text" <|
                 \_ ->
                     "Hello"
-                        |> Chords.parseTab
+                        |> parseTab
                         |> Expect.equal
                             [ [ Text "Hello" ] ]
             , test "parses a simple chord with text" <|
                 \_ ->
                     "[Am]Hello"
-                        |> Chords.parseTab
+                        |> parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord A Minor)
+                            [ [ Chord "Am"
                               , Text "Hello"
                               ]
                             ]
             , test "parses consecutive chords" <|
                 \_ ->
                     "[Am][E]"
-                        |> Chords.parseTab
+                        |> parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord A Minor)
-                              , Parsed (Chord E Major)
+                            [ [ Chord "Am"
+                              , Chord "E"
                               ]
                             ]
             , test "parses a more complicated line" <|
                 \_ ->
                     "[Am]Hello darkness [C]my old friend[E]"
-                        |> Chords.parseTab
+                        |> parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord A Minor)
+                            [ [ Chord "Am"
                               , Text "Hello darkness "
-                              , Parsed (Chord C Major)
+                              , Chord "C"
                               , Text "my old friend"
-                              , Parsed (Chord E Major)
+                              , Chord "E"
                               ]
                             ]
             , test "parses multiple lines" <|
                 \_ ->
                     "[Am]Hello darkness\n[C]my old friend[E]"
-                        |> Chords.parseTab
+                        |> parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord A Minor)
+                            [ [ Chord "Am"
                               , Text "Hello darkness"
                               ]
-                            , [ Parsed (Chord C Major)
+                            , [ Chord "C"
                               , Text "my old friend"
-                              , Parsed (Chord E Major)
+                              , Chord "E"
                               ]
                             ]
             , test "skips empty close brackets" <|
                 \_ ->
                     "[Am]Hello[] darkness[]"
-                        |> Chords.parseTab
+                        |> parseTab
                         |> Expect.equal
-                            [ [ Parsed (Chord A Minor)
+                            [ [ Chord "Am"
                               , Text "Hello darkness"
                               ]
                             ]
             ]
         ]
+
+
+convertToken : LP.Token -> Token
+convertToken token =
+    case token of
+        LP.Text string ->
+            Text string
+
+        LP.Parsed chord ->
+            Chord <| Chord.toString chord
+
+
+parseTab : String -> List (List Token)
+parseTab tab =
+    Chords.parseTab tab
+        |> List.map (List.map convertToken)

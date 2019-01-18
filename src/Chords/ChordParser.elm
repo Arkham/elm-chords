@@ -1,21 +1,31 @@
 module Chords.ChordParser exposing (parser)
 
+import Chords.Chord
+    exposing
+        ( Chord(..)
+        , Quality(..)
+        , TertianQuality(..)
+        )
 import Chords.Note exposing (Note(..))
-import Chords.Types exposing (Chord(..), Quality(..))
 import Parser exposing (..)
 
 
 parser : Parser Chord
 parser =
-    succeed Chord
+    let
+        buildChord note tertian quality =
+            Chord note (quality tertian)
+    in
+    succeed buildChord
         |= noteParser
         |= oneOf
             [ succeed identity
-                |. symbol "a"
-                |. symbol "u"
-                |. symbol "g"
+                |. aug
                 |= oneOf
-                    [ succeed Augmented7
+                    [ succeed AugmentedDominant7
+                        |. symbol "7"
+                    , succeed AugmentedMajor7
+                        |. maj
                         |. symbol "7"
                     , succeed Augmented
                     ]
@@ -29,15 +39,13 @@ parser =
                     , succeed Diminished
                     ]
             , succeed Major7
-                |. keyword "maj7"
+                |. backtrackable maj
+                |. symbol "7"
             , succeed Dominant7
                 |. symbol "7"
             , succeed Major6
                 |. symbol "6"
-            , succeed Fifth
-                |. symbol "5"
-            , succeed
-                identity
+            , succeed identity
                 |. oneOf
                     [ succeed ()
                         |. symbol "m"
@@ -52,6 +60,11 @@ parser =
                     , succeed Minor
                     ]
             , succeed Major
+            ]
+        |= oneOf
+            [ succeed (\_ -> Fifth)
+                |. symbol "5"
+            , succeed Tertian
             ]
 
 
@@ -103,3 +116,29 @@ flatParser : Note -> Parser Note
 flatParser note =
     succeed note
         |. symbol "b"
+
+
+aug : Parser ()
+aug =
+    succeed ()
+        |. oneOf
+            [ succeed ()
+                |. symbol "a"
+                |. symbol "u"
+                |. symbol "g"
+            , succeed ()
+                |. symbol "+"
+            ]
+
+
+maj : Parser ()
+maj =
+    succeed ()
+        |. oneOf
+            [ succeed ()
+                |. symbol "m"
+                |. symbol "a"
+                |. symbol "j"
+            , succeed ()
+                |. symbol "M"
+            ]

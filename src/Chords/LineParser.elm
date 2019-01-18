@@ -1,8 +1,13 @@
-module Chords.LineParser exposing (parse)
+module Chords.LineParser exposing (Token(..), parse)
 
+import Chords.Chord as Chord exposing (Chord)
 import Chords.ChordParser as ChordParser
-import Chords.Types exposing (Chord(..), Token(..))
 import Parser exposing (..)
+
+
+type Token
+    = Text String
+    | Parsed Chord
 
 
 parse : String -> List Token

@@ -38,7 +38,7 @@ toStringWith accidental note =
                     "Bb"
 
                 Sharp ->
-                    "G#"
+                    "A#"
 
         B ->
             "B"

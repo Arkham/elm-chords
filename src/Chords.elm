@@ -1,7 +1,6 @@
 module Chords exposing (parseTab)
 
-import Chords.LineParser as LineParser
-import Chords.Types exposing (Token)
+import Chords.LineParser as LineParser exposing (Token)
 
 
 parseTab : String -> List (List Token)

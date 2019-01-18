@@ -1,10 +1,9 @@
 module Chords.ChordParserSpec exposing (spec)
 
+import Chords.Chord as Chord exposing (Chord)
 import Chords.ChordParser as ChordParser
-import Chords.Note exposing (..)
-import Chords.Types exposing (..)
 import Expect
-import Parser as P exposing ((|.), (|=))
+import Parser exposing ((|.), (|=))
 import Test exposing (..)
 
 
@@ -15,100 +14,112 @@ spec =
             [ test "parses a major chord" <|
                 \_ ->
                     "C"
-                        |> run
-                        |> Expect.equal (Ok (Chord C Major))
+                        |> parse
+                        |> Expect.equal (Ok "C")
             , test "parses a sharp chord" <|
                 \_ ->
                     "C#"
-                        |> run
-                        |> Expect.equal (Ok (Chord Db Major))
+                        |> parse
+                        |> Expect.equal (Ok "C#")
             , test "parses a flat chord" <|
                 \_ ->
                     "Bb"
-                        |> run
-                        |> Expect.equal (Ok (Chord Bb Major))
+                        |> parse
+                        |> Expect.equal (Ok "A#")
             , test "parses a sharp chord equivalent" <|
                 \_ ->
                     "E#"
-                        |> run
-                        |> Expect.equal (Ok (Chord F Major))
+                        |> parse
+                        |> Expect.equal (Ok "F")
             , test "parses a flat chord equivalent" <|
                 \_ ->
                     "Fb"
-                        |> run
-                        |> Expect.equal (Ok (Chord E Major))
+                        |> parse
+                        |> Expect.equal (Ok "E")
             , test "parses a minor chord" <|
                 \_ ->
                     "Am"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Minor))
+                        |> parse
+                        |> Expect.equal (Ok "Am")
             , test "parses a minor chord with a dash" <|
                 \_ ->
                     "A-"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Minor))
+                        |> parse
+                        |> Expect.equal (Ok "Am")
             , test "parses an augmented chord" <|
                 \_ ->
                     "Aaug"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Augmented))
+                        |> parse
+                        |> Expect.equal (Ok "A+")
+            , test "parses an augmented chord using plus notation" <|
+                \_ ->
+                    "A+"
+                        |> parse
+                        |> Expect.equal (Ok "A+")
             , test "parses a diminished chord" <|
                 \_ ->
                     "Adim"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Diminished))
+                        |> parse
+                        |> Expect.equal (Ok "Adim")
             , test "parses a dominant seventh" <|
                 \_ ->
                     "A7"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Dominant7))
+                        |> parse
+                        |> Expect.equal (Ok "A7")
             , test "parses a major seventh" <|
                 \_ ->
                     "Amaj7"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Major7))
+                        |> parse
+                        |> Expect.equal (Ok "Amaj7")
             , test "parses a minor seventh" <|
                 \_ ->
                     "Am7"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Minor7))
-            , test "parses an augmented seventh" <|
+                        |> parse
+                        |> Expect.equal (Ok "Am7")
+            , test "parses an augmented dominant seventh" <|
                 \_ ->
                     "Aaug7"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Augmented7))
+                        |> parse
+                        |> Expect.equal (Ok "A+7")
+            , test "parses an augmented major seventh" <|
+                \_ ->
+                    "Aaugmaj7"
+                        |> parse
+                        |> Expect.equal (Ok "A+M7")
             , test "parses a diminished seventh" <|
                 \_ ->
                     "Adim7"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Diminished7))
+                        |> parse
+                        |> Expect.equal (Ok "Adim7")
             , test "parses a power chord" <|
                 \_ ->
                     "A5"
-                        |> run
-                        |> Expect.equal (Ok (Chord A Fifth))
+                        |> parse
+                        |> Expect.equal (Ok "A5")
             , test "parses a major sixth" <|
                 \_ ->
                     "D6"
-                        |> run
-                        |> Expect.equal (Ok (Chord D Major6))
+                        |> parse
+                        |> Expect.equal (Ok "D6")
             , test "parses a minor sixth" <|
                 \_ ->
                     "Dm6"
-                        |> run
-                        |> Expect.equal (Ok (Chord D Minor6))
+                        |> parse
+                        |> Expect.equal (Ok "Dm6")
             ]
         ]
 
 
-run : String -> Result (List P.DeadEnd) Chord
-run string =
+parse : String -> Result (List Parser.DeadEnd) String
+parse string =
     let
         -- in this test we want to match the whole string
-        testParser : P.Parser Chord
+        testParser : Parser.Parser Chord
         testParser =
-            P.succeed identity
+            Parser.succeed identity
                 |= ChordParser.parser
-                |. P.end
+                |. Parser.end
     in
-    P.run testParser string
+    string
+        |> Parser.run testParser
+        |> Result.map Chord.toString
