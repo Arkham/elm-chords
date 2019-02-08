@@ -1,4 +1,9 @@
-module Chords.Note exposing (Note(..), toString)
+module Chords.Note exposing
+    ( Note(..)
+    , next
+    , toString
+    , transpose
+    )
 
 
 type Note
@@ -19,6 +24,56 @@ type Note
 type Accidental
     = Flat
     | Sharp
+
+
+next : Note -> Note
+next note =
+    case note of
+        A ->
+            Bb
+
+        Bb ->
+            B
+
+        B ->
+            C
+
+        C ->
+            Db
+
+        Db ->
+            D
+
+        D ->
+            Eb
+
+        Eb ->
+            E
+
+        E ->
+            F
+
+        F ->
+            Gb
+
+        Gb ->
+            G
+
+        G ->
+            Ab
+
+        Ab ->
+            A
+
+
+transpose : Note -> Int -> Note
+transpose note count =
+    case count of
+        0 ->
+            note
+
+        n ->
+            transpose (next note) (count - 1)
 
 
 toString : Note -> String

@@ -2,10 +2,12 @@ module Chords.Chord exposing
     ( Chord(..)
     , Quality(..)
     , TertianQuality(..)
+    , toIntegerNotation
     , toString
     )
 
 import Chords.Note as Note exposing (Note)
+import Set
 
 
 type TertianQuality
@@ -124,3 +126,85 @@ tertianToString tertian =
 
         Minor9 ->
             "m9"
+
+
+toIntegerNotation : Chord -> List Int
+toIntegerNotation (Chord root quality) =
+    let
+        sortAndUnique list =
+            list
+                |> Set.fromList
+                |> Set.toList
+                |> List.sort
+    in
+    case quality of
+        Fifth ->
+            [ 0, 5 ]
+
+        Tertian tertian ->
+            sortAndUnique <| tertianToIntegerNotation tertian
+
+        Sus2 tertian ->
+            sortAndUnique <| 2 :: tertianToIntegerNotation tertian
+
+        Sus4 tertian ->
+            sortAndUnique <| 5 :: tertianToIntegerNotation tertian
+
+        Add9 tertian ->
+            sortAndUnique <| 14 :: tertianToIntegerNotation tertian
+
+        Add11 tertian ->
+            sortAndUnique <| 17 :: tertianToIntegerNotation tertian
+
+        NewRoot newRoot tertian ->
+            -- TODO
+            []
+
+
+tertianToIntegerNotation : TertianQuality -> List Int
+tertianToIntegerNotation tertian =
+    case tertian of
+        Major ->
+            [ 0, 4, 7 ]
+
+        Minor ->
+            [ 0, 3, 7 ]
+
+        Augmented ->
+            [ 0, 4, 8 ]
+
+        Diminished ->
+            [ 0, 3, 6 ]
+
+        Dominant7 ->
+            [ 0, 4, 7, 10 ]
+
+        Major7 ->
+            [ 0, 4, 7, 11 ]
+
+        Minor7 ->
+            [ 0, 3, 7, 10 ]
+
+        AugmentedDominant7 ->
+            [ 0, 4, 8, 10 ]
+
+        AugmentedMajor7 ->
+            [ 0, 4, 8, 11 ]
+
+        Diminished7 ->
+            [ 0, 3, 6, 9 ]
+
+        Major6 ->
+            [ 0, 4, 7, 9 ]
+
+        Minor6 ->
+            [ 0, 3, 7, 9 ]
+
+        Dominant9 ->
+            [ 0, 4, 7, 10, 14 ]
+
+        Major9 ->
+            [ 0, 4, 7, 11, 14 ]
+
+        Minor9 ->
+            [ 0, 3, 7, 10, 14 ]
