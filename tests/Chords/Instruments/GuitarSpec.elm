@@ -1,9 +1,9 @@
-module Instruments.GuitarSpec exposing (spec)
+module Chords.Instruments.GuitarSpec exposing (spec)
 
 import Chords.Chord exposing (..)
+import Chords.Instruments.Guitar as Guitar exposing (..)
 import Chords.Note exposing (Note(..))
 import Expect
-import Instruments.Guitar as Guitar exposing (..)
 import Test exposing (..)
 
 

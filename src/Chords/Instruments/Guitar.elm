@@ -1,4 +1,4 @@
-module Instruments.Guitar exposing
+module Chords.Instruments.Guitar exposing
     ( Config
     , Note(..)
     , Voicing
