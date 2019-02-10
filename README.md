@@ -49,5 +49,9 @@ getVoicings chords =
         |> List.filterMap identity
 ```
 
-This will parse the chords and generate some voicings for those chords, which
-you will be able to display to SVG using `Chords.Instruments.Diagram.view` :)
+This will parse the chords and generate some voicings, which you will be able to
+export to snazzy SVGs using `Chords.Instruments.Chart.view` :)
+
+## Tests
+
+Pull the repo and run `elm-test`

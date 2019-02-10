@@ -17,23 +17,23 @@ type Token
 spec : Test
 spec =
     describe "Chords"
-        [ describe "parseTab"
+        [ describe "parseSheet"
             [ test "parses a simple chord" <|
                 \_ ->
                     "[Am]"
-                        |> parseTab
+                        |> parseSheet
                         |> Expect.equal
                             [ [ Chord "Am" ] ]
             , test "parses a simple text" <|
                 \_ ->
                     "Hello"
-                        |> parseTab
+                        |> parseSheet
                         |> Expect.equal
                             [ [ Text "Hello" ] ]
             , test "parses a simple chord with text" <|
                 \_ ->
                     "[Am]Hello"
-                        |> parseTab
+                        |> parseSheet
                         |> Expect.equal
                             [ [ Chord "Am"
                               , Text "Hello"
@@ -42,7 +42,7 @@ spec =
             , test "parses consecutive chords" <|
                 \_ ->
                     "[Am][E]"
-                        |> parseTab
+                        |> parseSheet
                         |> Expect.equal
                             [ [ Chord "Am"
                               , Chord "E"
@@ -51,7 +51,7 @@ spec =
             , test "parses a more complicated line" <|
                 \_ ->
                     "[Am]Hello darkness [C]my old friend[E]"
-                        |> parseTab
+                        |> parseSheet
                         |> Expect.equal
                             [ [ Chord "Am"
                               , Text "Hello darkness "
@@ -63,7 +63,7 @@ spec =
             , test "parses multiple lines" <|
                 \_ ->
                     "[Am]Hello darkness\n[C]my old friend[E]"
-                        |> parseTab
+                        |> parseSheet
                         |> Expect.equal
                             [ [ Chord "Am"
                               , Text "Hello darkness"
@@ -76,7 +76,7 @@ spec =
             , test "skips empty close brackets" <|
                 \_ ->
                     "[Am]Hello[] darkness[]"
-                        |> parseTab
+                        |> parseSheet
                         |> Expect.equal
                             [ [ Chord "Am"
                               , Text "Hello darkness"
@@ -96,7 +96,7 @@ convertToken token =
             Chord <| Chord.toString chord
 
 
-parseTab : String -> List (List Token)
-parseTab tab =
-    Chords.parseTab tab
+parseSheet : String -> List (List Token)
+parseSheet tab =
+    Chords.parseSheet tab
         |> List.map (List.map convertToken)

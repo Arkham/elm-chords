@@ -1,4 +1,4 @@
-module Chords.Instruments.Diagram exposing (view, viewWith)
+module Chords.Instruments.Chart exposing (view, viewWith)
 
 import Chords.Instruments.Voicing exposing (Voicing)
 import List.Extra
@@ -48,14 +48,14 @@ viewWith config voicing =
         numStrings =
             List.length voicing
 
-        diagramHeight =
+        chartHeight =
             height_ - (2 * verticalPadding)
 
-        diagramWidth =
+        chartWidth =
             width_ - (2 * horizontalPadding)
 
         columnWidth =
-            diagramWidth
+            chartWidth
                 / toFloat (numStrings - 1)
 
         fretValues =
@@ -93,7 +93,7 @@ viewWith config voicing =
             highestFret - numFrets < 0
 
         rowHeight =
-            diagramHeight
+            chartHeight
                 / toFloat (numFrets - 1)
 
         strings =
@@ -108,7 +108,7 @@ viewWith config voicing =
                             dVal =
                                 d
                                     ( horizontalOffset, verticalPadding )
-                                    ( horizontalOffset, verticalPadding + diagramHeight )
+                                    ( horizontalOffset, verticalPadding + chartHeight )
                         in
                         Svg.path
                             [ Attr.stroke color
@@ -136,7 +136,7 @@ viewWith config voicing =
                             dVal =
                                 d
                                     ( horizontalPadding, verticalOffset )
-                                    ( horizontalPadding + diagramWidth, verticalOffset )
+                                    ( horizontalPadding + chartWidth, verticalOffset )
                         in
                         Svg.path
                             [ Attr.stroke color

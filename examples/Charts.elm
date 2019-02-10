@@ -1,8 +1,8 @@
-module Diagrams exposing (main)
+module Charts exposing (main)
 
 import Browser
 import Chords.ChordParser as ChordParser
-import Chords.Instruments.Diagram as Diagram
+import Chords.Instruments.Chart as Chart
 import Chords.Instruments.Guitar as Guitar
 import Chords.Instruments.Voicing exposing (Voicing)
 import Html exposing (Html)
@@ -58,7 +58,7 @@ view model =
                             Ok chord ->
                                 Guitar.voicings guitar chord
                                     |> List.head
-                                    |> Maybe.map (viewDiagram name)
+                                    |> Maybe.map (viewChart name)
                                     |> Maybe.withDefault
                                         (Html.text ("Could not find voicing for " ++ name))
 
@@ -74,14 +74,14 @@ view model =
         content
 
 
-viewDiagram : String -> Voicing -> Html msg
-viewDiagram name voicing =
+viewChart : String -> Voicing -> Html msg
+viewChart name voicing =
     Html.div
         [ Attr.style "display" "flex"
         , Attr.style "flexDirection" "column"
         , Attr.style "alignItems" "center"
         ]
-        [ Diagram.view voicing
+        [ Chart.view voicing
         , Html.div
             [ Attr.style "marginTop" "-30px"
             , Attr.style "fontWeight" "bold"
