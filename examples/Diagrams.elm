@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Diagrams exposing (main)
 
 import Browser
 import Chords.ChordParser as ChordParser

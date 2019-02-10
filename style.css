@@ -1,8 +1,0 @@
-html, body {
-  box-sizing: border-box;
-  font-family: "Roboto", Arial, sans-serif;
-}
-
-*, *:before, *:after {
-  box-sizing: inherit;
-}
