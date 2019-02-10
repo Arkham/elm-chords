@@ -1,28 +1,15 @@
 module Chords.Instruments.Guitar exposing
     ( Config
-    , Note(..)
-    , Voicing
     , defaultTuning
     , voicings
     )
 
 import Chords.Chord as Chord exposing (Chord(..))
-import Chords.Note as Note
+import Chords.Instruments.Note as Note exposing (Note(..))
+import Chords.Instruments.Voicing exposing (Voicing)
+import Chords.Note as RootNote
 import List.Extra
-
-
-type alias Fret =
-    Int
-
-
-type alias Octave =
-    Int
-
-
-{-| An instrument note is a note in a certain octave
--}
-type Note
-    = Note Note.Note Octave
+import Set
 
 
 type alias Tuning =
@@ -33,17 +20,13 @@ type alias Tuning =
 -}
 defaultTuning : Tuning
 defaultTuning =
-    [ Note Note.E 2
-    , Note Note.A 2
-    , Note Note.D 3
-    , Note Note.G 3
-    , Note Note.B 3
-    , Note Note.E 4
+    [ Note RootNote.E 2
+    , Note RootNote.A 2
+    , Note RootNote.D 3
+    , Note RootNote.G 3
+    , Note RootNote.B 3
+    , Note RootNote.E 4
     ]
-
-
-type alias Voicing =
-    List (Maybe ( Fret, Note ))
 
 
 type alias Config =
@@ -52,53 +35,27 @@ type alias Config =
     }
 
 
-next : Note -> Note
-next (Note note octave) =
-    let
-        ( newNote, newOctave ) =
-            case note of
-                Note.B ->
-                    ( Note.C, octave + 1 )
-
-                other ->
-                    ( Note.next other, octave )
-    in
-    Note newNote newOctave
-
-
-transpose : Note -> Int -> Note
-transpose note count =
-    case count of
-        0 ->
-            note
-
-        n ->
-            transpose (next note) (count - 1)
-
-
-matchesNote : Note -> Note.Note -> Bool
-matchesNote (Note firstNote _) secondNote =
-    firstNote == secondNote
-
-
 voicings : Config -> Chord -> List Voicing
 voicings { tuning, numFrets } ((Chord note quality) as chord) =
     let
         desiredNotes =
             Chord.toIntegerNotation chord
-                |> List.map (Note.transpose note)
+                |> List.map (RootNote.transpose note)
 
-        buildFretNoteRange initial =
-            List.range 0 5
-                |> List.map (\n -> ( n, transpose initial n ))
+        fretRange =
+            4
+
+        buildFretNoteRange start initial =
+            List.range start (start + fretRange)
+                |> List.map (\n -> ( n, Note.transpose initial n ))
                 |> List.filter
                     (\( fret, note_ ) ->
-                        List.any (matchesNote note_) desiredNotes
+                        List.any (Note.matchesNote note_) desiredNotes
                     )
 
-        availableVoicings =
+        availableVoicings n =
             tuning
-                |> List.map buildFretNoteRange
+                |> List.map (buildFretNoteRange n)
                 |> List.map
                     (\notes ->
                         if List.isEmpty notes then
@@ -111,22 +68,15 @@ voicings { tuning, numFrets } ((Chord note quality) as chord) =
 
         hasAllNotes : Voicing -> Bool
         hasAllNotes voicing =
-            List.all
-                (\desired ->
-                    List.any
-                        (\elem ->
-                            case elem of
-                                Just ( fret, note_ ) ->
-                                    matchesNote note_ desired
+            voicing
+                |> List.filterMap
+                    (Maybe.map (\( fret, Note n _ ) -> RootNote.toString n))
+                |> Set.fromList
+                |> Set.diff
+                    (Set.fromList (List.map RootNote.toString desiredNotes))
+                |> Set.isEmpty
 
-                                Nothing ->
-                                    False
-                        )
-                        voicing
-                )
-                desiredNotes
-
-        sorting : Voicing -> ( Int, Float, Int )
+        sorting : Voicing -> ( Int, Float )
         sorting voicing =
             let
                 allFrets =
@@ -157,15 +107,16 @@ voicings { tuning, numFrets } ((Chord note quality) as chord) =
                         / toFloat (List.length allFrets)
             in
             ( maximum - minimum + fretsAtZeroBonus
-            , average - toFloat minimum
-            , minimum
+            , average
+                * (average - toFloat minimum)
+                / toFloat (List.length allFrets)
             )
 
-        adjustRootNote : Voicing -> Voicing
-        adjustRootNote voicing =
+        muteNonRoot : Voicing -> Voicing
+        muteNonRoot voicing =
             case voicing of
                 (Just ( _, first )) :: (Just ( _, second )) :: rest ->
-                    if matchesNote first note || matchesNote second note then
+                    if Note.matchesNote first note || Note.matchesNote second note then
                         voicing
 
                     else
@@ -174,7 +125,8 @@ voicings { tuning, numFrets } ((Chord note quality) as chord) =
                 other ->
                     other
     in
-    availableVoicings
+    List.range 0 (numFrets - fretRange)
+        |> List.concatMap availableVoicings
         |> List.filter hasAllNotes
         |> List.sortBy sorting
-        |> List.map adjustRootNote
+        |> List.map muteNonRoot

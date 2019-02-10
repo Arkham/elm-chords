@@ -157,14 +157,5 @@ spec =
 
 parse : String -> Result (List Parser.DeadEnd) String
 parse string =
-    let
-        -- in this test we want to match the whole string
-        testParser : Parser.Parser Chord
-        testParser =
-            Parser.succeed identity
-                |= ChordParser.parser
-                |. Parser.end
-    in
-    string
-        |> Parser.run testParser
+    ChordParser.parse string
         |> Result.map Chord.toString

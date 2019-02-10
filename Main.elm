@@ -1,73 +1,31 @@
 module Main exposing (main)
 
 import Browser
-import Chords.Diagram
+import Chords.ChordParser as ChordParser
+import Chords.Instruments.Diagram as Diagram
+import Chords.Instruments.Guitar as Guitar
+import Chords.Instruments.Voicing exposing (Voicing)
 import Html exposing (Html)
+import Html.Attributes as Attr
 
 
 type alias Model =
-    List (List (Maybe Int))
+    { chords : List String }
 
 
 initialModel : Model
 initialModel =
-    [ [ Just 5
-      , Just 7
-      , Just 7
-      , Just 7
-      , Just 5
-      , Just 5
-      ]
-    , [ Just 0
-      , Just 2
-      , Just 2
-      , Just 6
-      , Just 8
-      , Just 0
-      ]
-    , [ Just 0
-      , Just 2
-      , Just 2
-      , Just 1
-      , Just 0
-      , Nothing
-      ]
-    , [ Nothing
-      , Just 2
-      , Just 2
-      , Just 1
-      , Nothing
-      , Nothing
-      ]
-    , [ Just 1
-      , Just 3
-      , Just 4
-      , Just 5
-      , Just 6
-      , Just 0
-      ]
-    , [ Just 1
-      , Just 3
-      , Just 4
-      , Just 5
-      , Just 6
-      , Just 1
-      ]
-    , [ Just 11
-      , Just 13
-      , Just 13
-      , Just 13
-      , Just 11
-      , Just 11
-      ]
-    , [ Just 2
-      , Just 4
-      , Just 5
-      , Just 6
-      , Just 7
-      , Just 2
-      ]
-    ]
+    { chords =
+        [ "Am"
+        , "E"
+        , "C"
+        , "Dm7"
+        , "G"
+        , "F"
+        , "A#"
+        , "C#"
+        ]
+    }
 
 
 type Msg
@@ -85,10 +43,51 @@ main =
 
 view : Model -> Html msg
 view model =
-    Html.div [] <|
-        List.map
-            Chords.Diagram.view
-            model
+    let
+        guitar =
+            { tuning = Guitar.defaultTuning
+            , numFrets = 10
+            }
+
+        content =
+            model.chords
+                |> List.map (\elem -> ( elem, ChordParser.parse elem ))
+                |> List.map
+                    (\( name, result ) ->
+                        case result of
+                            Ok chord ->
+                                Guitar.voicings guitar chord
+                                    |> List.head
+                                    |> Maybe.map (viewDiagram name)
+                                    |> Maybe.withDefault
+                                        (Html.text ("Could not find voicing for " ++ name))
+
+                            Err err ->
+                                Html.text ("Could not parse chord " ++ name)
+                    )
+    in
+    Html.div
+        [ Attr.style "display" "flex"
+        , Attr.style "flexDirection" "row"
+        , Attr.style "flexWrap" "wrap"
+        ]
+        content
+
+
+viewDiagram : String -> Voicing -> Html msg
+viewDiagram name voicing =
+    Html.div
+        [ Attr.style "display" "flex"
+        , Attr.style "flexDirection" "column"
+        , Attr.style "alignItems" "center"
+        ]
+        [ Diagram.view voicing
+        , Html.div
+            [ Attr.style "marginTop" "-30px"
+            , Attr.style "fontWeight" "bold"
+            ]
+            [ Html.text name ]
+        ]
 
 
 update : Msg -> Model -> Model

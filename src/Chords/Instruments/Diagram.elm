@@ -1,12 +1,9 @@
-module Chords.Diagram exposing (view, viewWith)
+module Chords.Instruments.Diagram exposing (view, viewWith)
 
+import Chords.Instruments.Voicing exposing (Voicing)
 import List.Extra
 import Svg exposing (Svg)
 import Svg.Attributes as Attr
-
-
-type alias Voicing =
-    List (Maybe Int)
 
 
 type alias Config =
@@ -65,8 +62,8 @@ viewWith config voicing =
             List.foldl
                 (\elem acc ->
                     case elem of
-                        Just x ->
-                            x :: acc
+                        Just ( fret, note ) ->
+                            fret :: acc
 
                         Nothing ->
                             acc
@@ -154,7 +151,7 @@ viewWith config voicing =
                 |> List.indexedMap
                     (\index elem ->
                         case elem of
-                            Just fret ->
+                            Just ( fret, note ) ->
                                 let
                                     relativeFret =
                                         if lowestFret == 0 then

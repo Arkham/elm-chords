@@ -1,7 +1,7 @@
 {
     "type": "package",
     "name": "Arkham/elm-chords",
-    "summary": "Parses chords and chord sheets",
+    "summary": "Parses guitar chords and chord sheets",
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": [

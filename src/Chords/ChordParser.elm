@@ -1,4 +1,4 @@
-module Chords.ChordParser exposing (parser)
+module Chords.ChordParser exposing (parse, parser)
 
 import Chords.Chord
     exposing
@@ -8,6 +8,19 @@ import Chords.Chord
         )
 import Chords.Note exposing (Note(..))
 import Parser exposing (..)
+
+
+parse : String -> Result (List Parser.DeadEnd) Chord
+parse string =
+    let
+        -- we want to match the whole string
+        endParser : Parser Chord
+        endParser =
+            succeed identity
+                |= parser
+                |. end
+    in
+    run endParser string
 
 
 parser : Parser Chord
