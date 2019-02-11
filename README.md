@@ -1,4 +1,4 @@
-# Elm Chords
+# Elm Chords [![Build Status](https://travis-ci.com/Arkham/elm-chords.svg?branch=master)](https://travis-ci.com/Arkham/elm-chords)
 
 Parse guitar chords and chord sheets in Elm!
 
