@@ -81,7 +81,7 @@ viewWith config voicing =
 
         fretRange =
             if lowestFret == 0 then
-                highestFret - lowestFret
+                highestFret
 
             else
                 highestFret - lowestFret + 1
@@ -154,8 +154,8 @@ viewWith config voicing =
                             Just ( fret, note ) ->
                                 let
                                     relativeFret =
-                                        if lowestFret == 0 then
-                                            fret - lowestFret
+                                        if atBeginning then
+                                            fret
 
                                         else
                                             fret - lowestFret + 1
@@ -170,7 +170,7 @@ viewWith config voicing =
                                             + (columnWidth * toFloat index)
 
                                     fillColor =
-                                        if relativeFret == 0 && lowestFret == 0 then
+                                        if atBeginning && relativeFret == 0 then
                                             "white"
 
                                         else
