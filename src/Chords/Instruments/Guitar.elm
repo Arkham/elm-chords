@@ -6,7 +6,7 @@ module Chords.Instruments.Guitar exposing
 
 import Chords.Chord as Chord exposing (Chord(..))
 import Chords.Instruments.Note as Note exposing (Note(..))
-import Chords.Instruments.Voicing exposing (Voicing)
+import Chords.Instruments.Voicing as Voicing exposing (Voicing)
 import Chords.Note as RootNote
 import List.Extra
 import Set
@@ -127,6 +127,7 @@ voicings { tuning, numFrets } ((Chord note quality) as chord) =
     in
     List.range 0 (numFrets - fretRange)
         |> List.concatMap availableVoicings
+        |> List.Extra.uniqueBy Voicing.toString
         |> List.filter hasAllNotes
         |> List.sortBy sorting
         |> List.map muteNonRoot
