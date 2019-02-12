@@ -2,7 +2,7 @@ module Chords.Instruments.Chart exposing (view, viewWith)
 
 import Chords.Instruments.Voicing exposing (Voicing)
 import List.Extra
-import Svg exposing (Svg)
+import Svg exposing (Attribute, Svg)
 import Svg.Attributes as Attr
 
 
@@ -15,8 +15,8 @@ type alias Config =
     }
 
 
-view : Voicing -> Svg msg
-view voicing =
+view : String -> Voicing -> Svg msg
+view label voicing =
     viewWith
         { height = 200
         , width = 150
@@ -24,11 +24,12 @@ view voicing =
         , vPaddingPct = 0.2
         , minFrets = 4
         }
+        label
         voicing
 
 
-viewWith : Config -> Voicing -> Svg msg
-viewWith config voicing =
+viewWith : Config -> String -> Voicing -> Svg msg
+viewWith config label voicing =
     let
         { height, width, hPaddingPct, vPaddingPct, minFrets } =
             config
@@ -194,19 +195,13 @@ viewWith config voicing =
                                         horizontalPadding
                                             + (columnWidth * toFloat index)
                                 in
-                                Svg.text_
-                                    [ Attr.x <| String.fromFloat horizontalOffset
-                                    , Attr.y <| String.fromFloat verticalOffset
-                                    , Attr.fontFamily "Arial"
-                                    , Attr.fontSize <| String.fromFloat (rowHeight / 2)
-                                    , Attr.textAnchor "middle"
-                                    ]
-                                    [ Svg.tspan
-                                        [ Attr.alignmentBaseline "central"
-                                        ]
-                                        [ Svg.text "X"
-                                        ]
-                                    ]
+                                centeredText
+                                    { x = horizontalOffset
+                                    , y = verticalOffset
+                                    , fontSize = rowHeight / 2
+                                    }
+                                    []
+                                    "X"
                     )
 
         startFret =
@@ -214,30 +209,35 @@ viewWith config voicing =
                 []
 
             else
-                [ Svg.text_
-                    [ Attr.x <| String.fromFloat (horizontalPadding / 2)
-                    , Attr.y <| String.fromFloat (rowHeight / 2 + verticalPadding)
-                    , Attr.fontFamily "Arial"
-                    , Attr.fontSize <| String.fromFloat (rowHeight / 2)
-                    , Attr.textAnchor "middle"
-                    ]
-                    [ Svg.tspan
-                        [ Attr.alignmentBaseline "central"
-                        ]
-                        [ Svg.text <| String.fromInt lowestFret
-                        ]
-                    ]
+                [ centeredText
+                    { x = horizontalPadding / 2
+                    , y = rowHeight / 2 + verticalPadding
+                    , fontSize = rowHeight / 2
+                    }
+                    []
+                    (String.fromInt lowestFret)
                 ]
+
+        label_ =
+            centeredText
+                { x = horizontalPadding + (chartWidth / 2)
+                , y = verticalPadding * 1.5 + chartHeight
+                , fontSize = rowHeight * 0.6
+                }
+                [ Attr.fontWeight "bold" ]
+                label
     in
     Svg.svg
         [ Attr.height "100%"
         , Attr.width "100%"
         , Attr.viewBox ("0 0 " ++ String.fromInt width ++ " " ++ String.fromInt height)
         ]
-        (strings
-            ++ frets
-            ++ notes
-            ++ startFret
+        (label_
+            :: (strings
+                    ++ frets
+                    ++ notes
+                    ++ startFret
+               )
         )
 
 
@@ -256,3 +256,26 @@ d ( startX, startY ) ( endX, endY ) =
         ++ String.fromFloat endX
         ++ ","
         ++ String.fromFloat endY
+
+
+centeredText :
+    { x : Float, y : Float, fontSize : Float }
+    -> List (Attribute msg)
+    -> String
+    -> Svg msg
+centeredText { x, y, fontSize } attrs text =
+    Svg.text_
+        ([ Attr.x <| String.fromFloat x
+         , Attr.y <| String.fromFloat y
+         , Attr.fontFamily "Helvetica, Arial, sans-serif"
+         , Attr.fontSize <| String.fromFloat fontSize
+         , Attr.textAnchor "middle"
+         ]
+            ++ attrs
+        )
+        [ Svg.tspan
+            [ Attr.alignmentBaseline "central"
+            ]
+            [ Svg.text text
+            ]
+        ]

@@ -77,16 +77,9 @@ view model =
 viewChart : String -> Voicing -> Html msg
 viewChart name voicing =
     Html.div
-        [ Attr.style "display" "flex"
-        , Attr.style "flexDirection" "column"
-        , Attr.style "alignItems" "center"
+        [ Attr.style "width" "150px"
         ]
-        [ Chart.view voicing
-        , Html.div
-            [ Attr.style "marginTop" "-30px"
-            , Attr.style "fontWeight" "bold"
-            ]
-            [ Html.text name ]
+        [ Chart.view name voicing
         ]
 
 
