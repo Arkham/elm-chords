@@ -230,8 +230,9 @@ viewWith config voicing =
                 ]
     in
     Svg.svg
-        [ Attr.height (String.fromInt height)
-        , Attr.width (String.fromInt width)
+        [ Attr.height "100%"
+        , Attr.width "100%"
+        , Attr.viewBox ("0 0 " ++ String.fromInt width ++ " " ++ String.fromInt height)
         ]
         (strings
             ++ frets
