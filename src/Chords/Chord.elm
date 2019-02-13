@@ -128,7 +128,7 @@ tertianToString tertian =
             "m9"
 
 
-toIntegerNotation : Chord -> List Int
+toIntegerNotation : Chord -> ( Note, List Int )
 toIntegerNotation (Chord root quality) =
     let
         sortAndUnique list =
@@ -139,26 +139,39 @@ toIntegerNotation (Chord root quality) =
     in
     case quality of
         Fifth ->
-            [ 0, 5 ]
+            ( root, [ 0, 5 ] )
 
         Tertian tertian ->
-            sortAndUnique <| tertianToIntegerNotation tertian
+            ( root, sortAndUnique <| tertianToIntegerNotation tertian )
 
         Sus2 tertian ->
-            sortAndUnique <| 2 :: tertianToIntegerNotation tertian
+            ( root, sortAndUnique <| 2 :: tertianToIntegerNotation tertian )
 
         Sus4 tertian ->
-            sortAndUnique <| 5 :: tertianToIntegerNotation tertian
+            ( root, sortAndUnique <| 5 :: tertianToIntegerNotation tertian )
 
         Add9 tertian ->
-            sortAndUnique <| 14 :: tertianToIntegerNotation tertian
+            ( root, sortAndUnique <| 14 :: tertianToIntegerNotation tertian )
 
         Add11 tertian ->
-            sortAndUnique <| 17 :: tertianToIntegerNotation tertian
+            ( root, sortAndUnique <| 17 :: tertianToIntegerNotation tertian )
 
         NewRoot newRoot tertian ->
-            -- TODO
-            []
+            let
+                tertianNotation =
+                    tertianToIntegerNotation tertian
+
+                distanceBetweenRoots =
+                    Note.distance newRoot root
+
+                shiftedNotation =
+                    List.map
+                        (\note ->
+                            modBy 12 (note + distanceBetweenRoots)
+                        )
+                        tertianNotation
+            in
+            ( newRoot, sortAndUnique <| 0 :: shiftedNotation )
 
 
 tertianToIntegerNotation : TertianQuality -> List Int

@@ -1,5 +1,6 @@
 module Chords.Note exposing
     ( Note(..)
+    , distance
     , next
     , toString
     , transpose
@@ -74,6 +75,19 @@ transpose note count =
 
         n ->
             transpose (next note) (count - 1)
+
+
+distance : Note -> Note -> Int
+distance firstNote secondNote =
+    let
+        distance_ first second count =
+            if transpose first count == second then
+                count
+
+            else
+                distance_ first second (count + 1)
+    in
+    distance_ firstNote secondNote 0
 
 
 toString : Note -> String

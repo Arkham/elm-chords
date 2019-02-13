@@ -35,15 +35,68 @@ type alias Config =
     }
 
 
-voicings : Config -> Chord -> List Voicing
-voicings { tuning, numFrets } ((Chord note quality) as chord) =
+type alias VoicingInfo =
+    { allFrets : List Int
+    , averageFret : Float
+    , fretsAtMaximum : Int
+    , fretsAtMinimum : Int
+    , fretsCount : Int
+    , maximumFret : Int
+    , minimumFret : Int
+    }
+
+
+voicingInfo : Voicing -> VoicingInfo
+voicingInfo voicing =
     let
-        desiredNotes =
+        allFrets =
+            voicing
+                |> List.filterMap identity
+                |> List.map Tuple.first
+
+        fretsCount =
+            List.length allFrets
+
+        minimumFret =
+            List.minimum allFrets
+                |> Maybe.withDefault 0
+
+        maximumFret =
+            List.maximum allFrets
+                |> Maybe.withDefault 0
+
+        averageFret =
+            toFloat (List.sum allFrets)
+                / toFloat fretsCount
+
+        fretsAtMinimum =
+            List.Extra.count ((==) minimumFret) allFrets
+
+        fretsAtMaximum =
+            List.Extra.count ((==) maximumFret) allFrets
+    in
+    { allFrets = allFrets
+    , fretsCount = fretsCount
+    , minimumFret = minimumFret
+    , maximumFret = maximumFret
+    , averageFret = averageFret
+    , fretsAtMinimum = fretsAtMinimum
+    , fretsAtMaximum = fretsAtMaximum
+    }
+
+
+voicings : Config -> Chord -> List Voicing
+voicings { tuning, numFrets } chord =
+    let
+        ( root, integerNotation ) =
             Chord.toIntegerNotation chord
-                |> List.map (RootNote.transpose note)
+
+        desiredNotes =
+            List.map (RootNote.transpose root)
+                integerNotation
 
         fretRange =
-            4
+            3
 
         buildFretNoteRange start initial =
             List.range start (start + fretRange)
@@ -76,47 +129,62 @@ voicings { tuning, numFrets } ((Chord note quality) as chord) =
                     (Set.fromList (List.map RootNote.toString desiredNotes))
                 |> Set.isEmpty
 
-        sorting : Voicing -> ( Int, Float )
+        isErgonomic : Voicing -> Bool
+        isErgonomic voicing =
+            let
+                { fretsCount, fretsAtMinimum, fretsAtMaximum } =
+                    voicingInfo voicing
+
+                noHoles =
+                    fretsCount == List.length voicing
+
+                lowerRoot =
+                    voicing
+                        |> List.take 3
+                        |> List.filterMap identity
+                        |> List.any
+                            (\( _, note ) ->
+                                Note.matchesNote note root
+                            )
+            in
+            noHoles && lowerRoot && fretsAtMinimum > 1 && fretsAtMaximum <= 3
+
+        sorting : Voicing -> ( Int, Int, Float )
         sorting voicing =
             let
-                allFrets =
-                    voicing
-                        |> List.filterMap identity
-                        |> List.map Tuple.first
+                { allFrets, fretsCount, minimumFret, maximumFret, averageFret, fretsAtMinimum, fretsAtMaximum } =
+                    voicingInfo voicing
 
-                minimum =
-                    List.minimum allFrets
-                        |> Maybe.withDefault 0
+                neckWeight =
+                    round averageFret // (fretRange * 2)
 
-                maximum =
-                    List.maximum allFrets
-                        |> Maybe.withDefault 0
+                minimumFactor =
+                    if fretsAtMinimum >= 3 then
+                        0
+
+                    else
+                        1
 
                 fretsAtZero =
                     List.Extra.count ((==) 0) allFrets
 
-                fretsAtZeroBonus =
+                zeroFactor =
                     if fretsAtZero >= 2 then
-                        -fretsAtZero
-
-                    else
                         0
 
-                average =
-                    toFloat (List.sum allFrets)
-                        / toFloat (List.length allFrets)
+                    else
+                        2
             in
-            ( maximum - minimum + fretsAtZeroBonus
-            , average
-                * (average - toFloat minimum)
-                / toFloat (List.length allFrets)
+            ( neckWeight
+            , maximumFret - minimumFret + zeroFactor + minimumFactor
+            , averageFret / toFloat fretsCount
             )
 
         muteNonRoot : Voicing -> Voicing
         muteNonRoot voicing =
             case voicing of
                 (Just ( _, first )) :: (Just ( _, second )) :: rest ->
-                    if Note.matchesNote first note || Note.matchesNote second note then
+                    if Note.matchesNote first root || Note.matchesNote second root then
                         voicing
 
                     else
@@ -129,5 +197,6 @@ voicings { tuning, numFrets } ((Chord note quality) as chord) =
         |> List.concatMap availableVoicings
         |> List.Extra.uniqueBy Voicing.toString
         |> List.filter hasAllNotes
+        |> List.filter isErgonomic
         |> List.sortBy sorting
         |> List.map muteNonRoot
