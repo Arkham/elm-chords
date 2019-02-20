@@ -75,7 +75,7 @@ viewChord label chord =
 This will parse the chords, generate some voicings and display the charts. You
 should see something like this!
 
-![Charts](./images/charts.png)
+![Charts](https://github.com/Arkham/elm-chords/blob/master/images/charts.png?raw=true)
 
 ## Tests
 
