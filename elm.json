@@ -3,7 +3,7 @@
     "name": "Arkham/elm-chords",
     "summary": "Parses guitar chords and chord sheets",
     "license": "BSD-3-Clause",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "exposed-modules": [
         "Chords",
         "Chords.Note",
