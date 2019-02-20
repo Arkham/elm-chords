@@ -1,11 +1,9 @@
-module Chords.Instruments.GuitarSpec exposing (spec)
+module Instruments.GuitarSpec exposing (spec)
 
-import Chords.Chord exposing (..)
-import Chords.Instruments.Guitar as Guitar
-import Chords.Instruments.Note as Note
-import Chords.Instruments.Voicing as Voicing
+import Chords exposing (..)
 import Chords.Note exposing (Note(..))
 import Expect
+import Instruments.Guitar as Guitar
 import Test exposing (..)
 
 
@@ -147,4 +145,4 @@ firstVoicing chord =
     chord
         |> Guitar.voicings config
         |> List.head
-        |> Maybe.map Voicing.toString
+        |> Maybe.map voicingToString

@@ -1,12 +1,30 @@
 module Chords.Note exposing
-    ( Note(..)
-    , distance
-    , next
-    , toString
-    , transpose
+    ( Note(..), Accidental(..)
+    , next, transpose, distance
+    , toString, toStringWith
     )
 
+{-| Represents the note that gives a name to a chord.
 
+@docs Note, Accidental
+
+
+# Manipulating Notes
+
+@docs next, transpose, distance
+
+
+# Exporting
+
+@docs toString, toStringWith
+
+-}
+
+
+{-| This note is also known as pitch class, because it describes every
+occurrence of that note in any octave. Every accidental is described using
+the flat notation for consistency.
+-}
 type Note
     = A
     | Bb
@@ -22,11 +40,17 @@ type Note
     | Ab
 
 
+{-| This type describes accidentals. Sometimes accidentals can be enharmonic,
+which means that they describe the same pitch: one example of this is A Sharp
+B Flat.
+-}
 type Accidental
     = Flat
     | Sharp
 
 
+{-| Returns the next note.
+-}
 next : Note -> Note
 next note =
     case note of
@@ -67,21 +91,25 @@ next note =
             A
 
 
-transpose : Note -> Int -> Note
-transpose note count =
+{-| Returns the note transposed by a number of semitones.
+-}
+transpose : Int -> Note -> Note
+transpose count note =
     case count of
         0 ->
             note
 
         n ->
-            transpose (next note) (count - 1)
+            transpose (count - 1) (next note)
 
 
+{-| Returns the distance in semitones between two notes.
+-}
 distance : Note -> Note -> Int
 distance firstNote secondNote =
     let
         distance_ first second count =
-            if transpose first count == second then
+            if transpose count first == second then
                 count
 
             else
@@ -90,11 +118,15 @@ distance firstNote secondNote =
     distance_ firstNote secondNote 0
 
 
+{-| Converts a note to String.
+-}
 toString : Note -> String
 toString note =
     toStringWith Sharp note
 
 
+{-| Converts a note to String. You can decide how to display accidentals.
+-}
 toStringWith : Accidental -> Note -> String
 toStringWith accidental note =
     case note of

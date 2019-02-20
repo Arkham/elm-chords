@@ -1,11 +1,34 @@
-module Chords.Instruments.Chart exposing (view, viewWith)
+module Chords.Chart exposing
+    ( Config
+    , view, viewWith
+    )
 
-import Chords.Instruments.Voicing exposing (Voicing)
+{-| Export a chord voicing to SVG
+
+@docs Config
+
+
+# Charts
+
+@docs view, viewWith
+
+-}
+
+import Chords exposing (Voicing)
 import List.Extra
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes as Attr
 
 
+{-| Contains options to customize SVG.
+
+  - `height`: relative height within svg viewbox
+  - `width`: relative width within svg viewbox
+  - `hPaddingPct`: percentage of width to use as horizontal padding
+  - `vPaddingPct`: percentage of height to use as vertical padding
+  - `minFrets`: minimum number of frets to display in a chart
+
+-}
 type alias Config =
     { height : Int
     , width : Int
@@ -15,6 +38,8 @@ type alias Config =
     }
 
 
+{-| Render a chord voicing and a label to SVG.
+-}
 view : String -> Voicing -> Svg msg
 view label voicing =
     viewWith
@@ -28,6 +53,8 @@ view label voicing =
         voicing
 
 
+{-| Render a chord voicing and a label to SVG passing along customizations.
+-}
 viewWith : Config -> String -> Voicing -> Svg msg
 viewWith config label voicing =
     let

@@ -1,12 +1,11 @@
 module Charts exposing (main)
 
 import Browser
-import Chords.ChordParser as ChordParser
-import Chords.Instruments.Chart as Chart
-import Chords.Instruments.Guitar as Guitar
-import Chords.Instruments.Voicing exposing (Voicing)
+import Chords exposing (Voicing)
+import Chords.Chart
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Instruments.Guitar as Guitar
 
 
 type alias Model =
@@ -51,7 +50,7 @@ view model =
 
         content =
             model.chords
-                |> List.map (\elem -> ( elem, ChordParser.parse elem ))
+                |> List.map (\elem -> ( elem, Chords.parseChord elem ))
                 |> List.map
                     (\( name, result ) ->
                         case result of
@@ -79,7 +78,7 @@ viewChart name voicing =
     Html.div
         [ Attr.style "width" "150px"
         ]
-        [ Chart.view name voicing
+        [ Chords.Chart.view name voicing
         ]
 
 

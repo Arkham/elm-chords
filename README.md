@@ -11,10 +11,12 @@ Parse guitar chords and chord sheets in Elm!
 Here's an example of what you could do:
 
 ```elm
-import Chords.ChordParser as CP
-import Chords.Instruments.Guitar as Guitar
-import Chords.Instruments.Voicing exposing (Voicing)
+import Html exposing (Html)
+import Chords exposing (Chord, Voicing)
+import Chords.Chart
+import Instruments.Guitar as Guitar
 
+chords : List String
 chords =
     [ "Am"
     , "E"
@@ -26,31 +28,54 @@ chords =
     , "C#"
     ]
 
-getVoicings : List String -> List Voicing
-getVoicings chords =
+
+view : Html msg
+view =
+    Html.div []
+        (chords
+            |> List.map
+                (\name ->
+                    ( name, CP.parse name )
+                )
+            |> List.map
+                (\( name, result ) ->
+                    case result of
+                        Ok chord ->
+                            viewChord name chord
+
+                        Err err ->
+                            Html.span []
+                                [ Html.text ("Could not parse " ++ name)
+                                ]
+                )
+        )
+
+
+viewChord : String -> Chord -> Html msg
+viewChord label chord =
     let
-        guitar =
+        config =
             { tuning = Guitar.defaultTuning
             , numFrets = 10
             }
     in
-    chords
-        |> List.map CP.parse
-        |> List.map
-            (\result ->
-                case result of
-                    Ok chord ->
-                        Guitar.voicings guitar chord
-                        |> List.head
+    case Guitar.voicings config chord of
+        [] ->
+            Html.span []
+                [ Html.text
+                    ("Could not find voicing for chord "
+                        ++ Chords.toString chord
+                    )
+                ]
 
-                    Err err ->
-                        Nothing
-            )
-        |> List.filterMap identity
+        first :: rest ->
+            Chords.Chart.view label first
 ```
 
-This will parse the chords and generate some voicings, which you will be able to
-export to snazzy SVGs using `Chords.Instruments.Chart.view` :)
+This will parse the chords, generate some voicings and display the charts. You
+should see something like this!
+
+![Charts](./images/charts.png)
 
 ## Tests
 
