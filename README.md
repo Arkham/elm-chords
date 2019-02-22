@@ -35,13 +35,13 @@ view =
         (chords
             |> List.map
                 (\name ->
-                    ( name, CP.parse name )
+                    ( name, Chords.parseChord name )
                 )
             |> List.map
                 (\( name, result ) ->
                     case result of
                         Ok chord ->
-                            viewChord name chord
+                            viewChord chord
 
                         Err err ->
                             Html.span []
@@ -51,25 +51,26 @@ view =
         )
 
 
-viewChord : String -> Chord -> Html msg
-viewChord label chord =
+viewChord : Chord -> Html msg
+viewChord chord =
     let
         config =
             { tuning = Guitar.defaultTuning
             , numFrets = 10
             }
+
+        name =
+            Chords.toString chord
     in
     case Guitar.voicings config chord of
         [] ->
             Html.span []
                 [ Html.text
-                    ("Could not find voicing for chord "
-                        ++ Chords.toString chord
-                    )
+                    ("Could not find voicing for chord " ++ name)
                 ]
 
         first :: rest ->
-            Chords.Chart.view label first
+            Chords.Chart.view name first
 ```
 
 This will parse the chords, generate some voicings and display the charts. You
