@@ -1,6 +1,6 @@
 # Elm Chords [![Build Status](https://travis-ci.com/Arkham/elm-chords.svg?branch=master)](https://travis-ci.com/Arkham/elm-chords)
 
-Parse guitar chords and chord sheets in Elm!
+Parse chords sheets for guitar and ukulele in Elm!
 
 ## Installation
 
@@ -76,7 +76,10 @@ viewChord chord =
 This will parse the chords, generate some voicings and display the charts. You
 should see something like this!
 
-![Charts](https://github.com/Arkham/elm-chords/blob/master/images/charts.png?raw=true)
+<img src="https://github.com/Arkham/elm-chords/blob/master/images/charts.png" width="800">
+
+If you'd like to use Ukulele instead, import `Instruments.Ukulele` and use
+it in the same way!
 
 ## Tests
 
